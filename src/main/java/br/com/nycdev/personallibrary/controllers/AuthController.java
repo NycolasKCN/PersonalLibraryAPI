@@ -41,12 +41,12 @@ public class AuthController {
     @PostMapping
     public boolean isValid(@RequestBody TokenForm token) {
         System.out.println(token);
-        return tokenService.isValidToken(token.token());
+        return tokenService.isValidToken(token.accessToken());
     }
 
     @RequestMapping("/userIdInToken")
     @PostMapping
     public Long userIdInToken(@RequestBody TokenForm token) {
-        return tokenService.getUserIdInToken(token.token());
+        return tokenService.getUserIdInToken(token.accessToken());
     }
 }

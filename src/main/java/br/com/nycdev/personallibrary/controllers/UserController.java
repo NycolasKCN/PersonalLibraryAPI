@@ -1,9 +1,15 @@
 package br.com.nycdev.personallibrary.controllers;
 
+import br.com.nycdev.personallibrary.dtos.BookDto;
 import br.com.nycdev.personallibrary.dtos.UserDto;
+import br.com.nycdev.personallibrary.exceptions.BookNotFoundExecption;
 import br.com.nycdev.personallibrary.exceptions.UserLoginAlreadyExistsException;
+import br.com.nycdev.personallibrary.exceptions.UserNotFoundException;
+import br.com.nycdev.personallibrary.forms.BookForm;
 import br.com.nycdev.personallibrary.forms.UserForm;
 
+import br.com.nycdev.personallibrary.models.Book;
+import br.com.nycdev.personallibrary.services.BookService;
 import br.com.nycdev.personallibrary.services.UserService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,8 +50,29 @@ public class UserController {
         try {
             UserDto userDto = new UserDto(userService.findUserById(userId));
             return new ResponseEntity<>(userDto, HttpStatus.FOUND);
-        } catch (UsernameNotFoundException e) {
+        } catch (UserNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
     }
+
+    @RequestMapping("/books")
+    @GetMapping
+    public ResponseEntity<List<BookDto>> getUserBooks(@RequestHeader("accessToken") String accessToken) {
+        try {
+            return new ResponseEntity<>(userService.findUserBooks(accessToken), HttpStatus.FOUND);
+        } catch (UserNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        }
+    }
+
+    @RequestMapping("/books/{id}")
+    @DeleteMapping
+    public ResponseEntity<BookDto> removeBook(@RequestHeader("accessToken") String accessToken, @PathVariable Long id) {
+        try {
+            return new ResponseEntity<>(userService.removeBook(accessToken, id), HttpStatus.ACCEPTED);
+        } catch (BookNotFoundExecption e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 }

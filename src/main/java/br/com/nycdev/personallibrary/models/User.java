@@ -44,9 +44,6 @@ public class User implements UserDetails {
 
     protected User() { }
 
-//    public void addBook(Book book) {
-//        this.books.add(book);
-//    }
 
     public void setId(Long id) {
         this.id = id;

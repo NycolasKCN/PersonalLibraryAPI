@@ -3,6 +3,7 @@ package br.com.nycdev.personallibrary.controllers;
 import br.com.nycdev.personallibrary.dtos.BookDto;
 import br.com.nycdev.personallibrary.exceptions.BookAlreadyExistsException;
 import br.com.nycdev.personallibrary.exceptions.UserLoginAlreadyExistsException;
+import br.com.nycdev.personallibrary.exceptions.UserNotFoundException;
 import br.com.nycdev.personallibrary.forms.BookForm;
 import br.com.nycdev.personallibrary.models.Book;
 import br.com.nycdev.personallibrary.repositorys.BookRepository;
@@ -31,7 +32,7 @@ public class BookController {
             return new ResponseEntity<>(service.addBookToUser(token, bookForm), HttpStatus.CREATED);
         } catch (BookAlreadyExistsException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
-        } catch (UsernameNotFoundException e) {
+        } catch (UserNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, e.getMessage());
         }
     }

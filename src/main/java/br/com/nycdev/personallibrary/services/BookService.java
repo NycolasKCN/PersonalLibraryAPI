@@ -1,35 +1,43 @@
 package br.com.nycdev.personallibrary.services;
 
 import br.com.nycdev.personallibrary.dtos.BookDto;
-import br.com.nycdev.personallibrary.dtos.UserDto;
 import br.com.nycdev.personallibrary.exceptions.BookAlreadyExistsException;
 import br.com.nycdev.personallibrary.forms.BookForm;
 import br.com.nycdev.personallibrary.models.Book;
+import br.com.nycdev.personallibrary.models.User;
 import br.com.nycdev.personallibrary.repositorys.BookRepository;
+import br.com.nycdev.personallibrary.repositorys.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class BookService {
+
     @Autowired
-    private BookRepository repository;
+    private UserService userService;
 
-    public BookDto addBook(BookForm bookForm) throws BookAlreadyExistsException {
-        Optional<Book> optionalBook = repository.findBookByName(bookForm.name());
+    @Autowired
+    private BookRepository bookRepository;
 
-        if (optionalBook.isPresent()) {
-            throw new BookAlreadyExistsException("Book with name: " + bookForm.name() + " already exist.");
-        }
+    @Autowired
+    private TokenService tokenService;
+
+    public BookDto addBookToUser(String accessToken, BookForm bookForm) throws BookAlreadyExistsException, UsernameNotFoundException {
+        Long idUser = tokenService.getUserIdInToken(accessToken);
+        User user = userService.findUserById(idUser);
 
         Book book = new Book(bookForm);
-        repository.save(book);
+        book.setOwner(user);
+
+        bookRepository.save(book);
+
         return new BookDto(book);
     }
 
     public List<BookDto> getAll() {
-        return repository.findAll().stream().map(BookDto::new).toList();
+        return bookRepository.findAll().stream().map(BookDto::new).toList();
     }
 }

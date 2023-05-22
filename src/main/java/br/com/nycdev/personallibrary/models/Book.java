@@ -8,14 +8,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "tb_book")
+@Table(name = "tb_books")
 public class Book {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+
     private long id;
+
     private String name;
+
     private String author;
+    @ManyToOne
+    private User owner;
 
     protected Book() {
     }
@@ -52,6 +57,14 @@ public class Book {
 
     public Long getId() {
         return id;
+    }
+
+    public void setOwner(User owner) {
+        this.owner = owner;
+    }
+
+    public User getOwner() {
+        return this.owner;
     }
 
     @Override

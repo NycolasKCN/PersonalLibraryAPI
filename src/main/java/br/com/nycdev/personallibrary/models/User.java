@@ -11,25 +11,29 @@ import java.util.Collection;
 import java.util.List;
 
 @Entity
-@Table(name="tb_user")
+@Table(name="tb_users")
 public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String name;
-    @Column(unique = true)
-    private String login;
-    private String password;
-    private String roles;
 
-    @ManyToMany
+    private String name;
+
+    private String login;
+
+
+    private String password;
+
+    private String role;
+
+    @OneToMany(mappedBy = "owner")
     private List<Book> books = new ArrayList<>();
 
-    public User(String name, String login, String password, String roles){
+    public User(String name, String login, String password, String role){
         this.name = name;
         this.login = login;
         this.password = new BCryptPasswordEncoder().encode(password);
-        this.roles = roles;
+        this.role = role;
     }
 
     public User(UserForm userForm) {
@@ -39,6 +43,10 @@ public class User implements UserDetails {
     }
 
     protected User() { }
+
+//    public void addBook(Book book) {
+//        this.books.add(book);
+//    }
 
     public void setId(Long id) {
         this.id = id;
@@ -74,12 +82,16 @@ public class User implements UserDetails {
         this.login = login;
     }
 
-    public String getRoles() {
-        return roles;
+    public String getRole() {
+        return role;
     }
 
-    public void setRoles(String role) {
-        this.roles = role;
+    public void setRole(String role) {
+        this.role = role;
+    }
+
+    public List<Book> getBooks() {
+        return books;
     }
 
     @Override
@@ -124,4 +136,6 @@ public class User implements UserDetails {
         result = 31 * result + name.hashCode();
         return result;
     }
+
+
 }

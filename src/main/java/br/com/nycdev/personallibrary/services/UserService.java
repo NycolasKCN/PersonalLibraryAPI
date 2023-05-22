@@ -6,6 +6,7 @@ import br.com.nycdev.personallibrary.forms.UserForm;
 import br.com.nycdev.personallibrary.models.User;
 import br.com.nycdev.personallibrary.repositorys.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -35,5 +36,13 @@ public class UserService {
             all.add(new UserDto(user));
         });
         return all;
+    }
+
+    public User findUserById(Long id) throws UsernameNotFoundException{
+        Optional<User> userOptional = userRepository.findById(id);
+        if (userOptional.isPresent()) {
+            return userOptional.get();
+        }
+        throw new UsernameNotFoundException("User with id: " + id + " does not exist.");
     }
 }

@@ -6,11 +6,13 @@ public class BookDto {
     private long id;
     private String name;
     private String author;
+    private String owner;
 
     public BookDto(Book book) {
         this.id = book.getId();
         this.name = book.getName();
         this.author = book.getAuthor();
+        this.owner = book.getOwner().getName();
     }
 
     public long getId() {
@@ -35,5 +37,13 @@ public class BookDto {
 
     public void setAuthor(String author) {
         this.author = author;
+    }
+
+    public String getOwner() {
+        return owner;
+    }
+
+    public void setOwner(String owner) {
+        this.owner = owner;
     }
 }

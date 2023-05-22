@@ -2,20 +2,16 @@ package br.com.nycdev.personallibrary.controllers;
 
 import br.com.nycdev.personallibrary.dtos.BookDto;
 import br.com.nycdev.personallibrary.dtos.UserDto;
-import br.com.nycdev.personallibrary.exceptions.BookNotFoundExecption;
+import br.com.nycdev.personallibrary.exceptions.BookNotFoundException;
 import br.com.nycdev.personallibrary.exceptions.UserLoginAlreadyExistsException;
 import br.com.nycdev.personallibrary.exceptions.UserNotFoundException;
-import br.com.nycdev.personallibrary.forms.BookForm;
 import br.com.nycdev.personallibrary.forms.UserForm;
 
-import br.com.nycdev.personallibrary.models.Book;
-import br.com.nycdev.personallibrary.services.BookService;
 import br.com.nycdev.personallibrary.services.UserService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -70,7 +66,7 @@ public class UserController {
     public ResponseEntity<BookDto> removeBook(@RequestHeader("accessToken") String accessToken, @PathVariable Long id) {
         try {
             return new ResponseEntity<>(userService.removeBook(accessToken, id), HttpStatus.ACCEPTED);
-        } catch (BookNotFoundExecption e) {
+        } catch (BookNotFoundException e) {
             throw new RuntimeException(e);
         }
     }

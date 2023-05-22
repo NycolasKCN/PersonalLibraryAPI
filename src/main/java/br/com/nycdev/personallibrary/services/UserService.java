@@ -2,15 +2,13 @@ package br.com.nycdev.personallibrary.services;
 
 import br.com.nycdev.personallibrary.dtos.BookDto;
 import br.com.nycdev.personallibrary.dtos.UserDto;
-import br.com.nycdev.personallibrary.exceptions.BookNotFoundExecption;
+import br.com.nycdev.personallibrary.exceptions.BookNotFoundException;
 import br.com.nycdev.personallibrary.exceptions.UserLoginAlreadyExistsException;
 import br.com.nycdev.personallibrary.exceptions.UserNotFoundException;
 import br.com.nycdev.personallibrary.forms.UserForm;
-import br.com.nycdev.personallibrary.models.Book;
 import br.com.nycdev.personallibrary.models.User;
 import br.com.nycdev.personallibrary.repositorys.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -66,7 +64,7 @@ public class UserService {
     return bookService.findBooksByUser(userOptional.get());
   }
 
-  public BookDto removeBook(String accessToken, Long id) throws BookNotFoundExecption {
+  public BookDto removeBook(String accessToken, Long id) throws BookNotFoundException {
     Long userId = tokenService.getUserIdInToken(accessToken);
     return bookService.removeBookById(userId, id);
   }

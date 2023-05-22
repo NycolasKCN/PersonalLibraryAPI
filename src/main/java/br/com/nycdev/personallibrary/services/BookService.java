@@ -2,7 +2,7 @@ package br.com.nycdev.personallibrary.services;
 
 import br.com.nycdev.personallibrary.dtos.BookDto;
 import br.com.nycdev.personallibrary.exceptions.BookAlreadyExistsException;
-import br.com.nycdev.personallibrary.exceptions.BookNotFoundExecption;
+import br.com.nycdev.personallibrary.exceptions.BookNotFoundException;
 import br.com.nycdev.personallibrary.exceptions.UserNotFoundException;
 import br.com.nycdev.personallibrary.forms.BookForm;
 import br.com.nycdev.personallibrary.models.Book;
@@ -47,10 +47,10 @@ public class BookService {
     return bookRepository.findBooksByOwnerIs(user).stream().map(BookDto::new).toList();
   }
 
-  public BookDto removeBookById(Long userId, Long id) throws BookNotFoundExecption{
+  public BookDto removeBookById(Long userId, Long id) throws BookNotFoundException {
     Optional<Book> bookOptional = bookRepository.findById(id);
     if (bookOptional.isEmpty()) {
-      throw new BookNotFoundExecption("Could not remove book with id: " + id);
+      throw new BookNotFoundException("Could not remove book with id: " + id);
     }
     Book book = bookOptional.get();
     if (!book.getOwner().getId().equals(userId)) {

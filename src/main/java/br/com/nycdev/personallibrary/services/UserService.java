@@ -28,9 +28,9 @@ public class UserService {
   private BookService bookService;
 
   public UserDto registerUser(UserForm userForm) throws UserLoginAlreadyExistsException {
-    Optional<User> userOptional = userRepository.findByLogin(userForm.login());
+    Optional<User> userOptional = userRepository.findByLogin(userForm.getLogin());
     if (userOptional.isPresent()) {
-      throw new UserLoginAlreadyExistsException("User with login: " +userForm.login()+ " already exists.");
+      throw new UserLoginAlreadyExistsException("User with login: " +userForm.getLogin()+ " already exists.");
     }
     User user = new User(userForm);
     userRepository.save(user);
@@ -38,12 +38,7 @@ public class UserService {
   }
 
   public List<UserDto> getAll() {
-    List<UserDto> all = new ArrayList<>();
-
-    userRepository.findAll().forEach(user -> {
-      all.add(new UserDto(user));
-    });
-    return all;
+    return userRepository.findAll().stream().map(UserDto::new).toList();
   }
 
   public User findUserById(Long id) throws UserNotFoundException{

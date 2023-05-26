@@ -2,9 +2,8 @@ package br.com.nycdev.personallibrary.controllers;
 
 
 import br.com.nycdev.personallibrary.models.User;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.Before;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEntityManager;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
@@ -22,26 +21,22 @@ import java.net.URI;
 @SpringBootTest
 @AutoConfigureMockMvc
 @AutoConfigureTestEntityManager
-@Transactional
 @Profile("test")
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@Transactional
 public class AuthControllerTest {
   @Autowired
   private MockMvc mockMvc;
   @Autowired
   private TestEntityManager testEntityManager;
 
-  @BeforeAll
-  public void setUp(){
-    User user = new User("Tony test", "tony.test", "123456", null);
-    testEntityManager.persist(user);
-  }
-
   @Test
   public void shouldReturn200IfAuthenticationDataIsValid() throws Exception {
+    User user = new User("Tony test", "tony.test", "123456", null);
+    testEntityManager.persist(user);
+
     URI uri = new URI("/authenticate");
 
-    String body = "{\"name\":\"Tony test\",\"login\":\"tony.test\",\"password\":\"123456\"}";
+    String body = "{\"login\":\"tony.test\",\"password\":\"123456\"}";
 
     mockMvc.perform(MockMvcRequestBuilders
                     .post(uri)
@@ -54,9 +49,12 @@ public class AuthControllerTest {
 
   @Test
   public void shouldReturn400IfAuthenticationDataIsNotValid() throws Exception {
+    User user = new User("Jones test", "jones.test", "123456", null);
+    testEntityManager.persist(user);
+
     URI uri = new URI("/authenticate");
 
-    String body = "{\"name\":\"Tony test\",\"login\":\"tony.test\",\"password\":\"1789\"}";
+    String body = "{\"login\":\"jones.test\",\"password\":\"1789\"}";
 
     mockMvc.perform(MockMvcRequestBuilders
                     .post(uri)

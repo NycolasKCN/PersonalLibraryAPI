@@ -9,9 +9,8 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import java.lang.reflect.Executable;
 import java.net.URI;
 
 @SpringBootTest
@@ -31,9 +30,8 @@ public class UserControllerTest {
                     .post(uri)
                     .content(body)
                     .contentType(MediaType.APPLICATION_JSON))
-            .andExpect(MockMvcResultMatchers
-                    .status()
-                    .is(201));
+            .andExpect(status().isCreated())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON));
   }
 
   @Test
@@ -51,8 +49,7 @@ public class UserControllerTest {
                     .post(uri)
                     .content(body2)
                     .contentType(MediaType.APPLICATION_JSON))
-            .andExpect(MockMvcResultMatchers
-                    .status()
-                    .is(400));
+            .andExpect(status()
+                    .isBadRequest());
   }
 }

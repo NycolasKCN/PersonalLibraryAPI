@@ -43,10 +43,10 @@ public class AuthController {
 
     public boolean isValid(@RequestBody TokenForm token) {
         System.out.println(token);
-        return tokenService.isValidToken(token.accessToken());
+        return tokenService.isValidToken(token.getAccessToken());
     }
 
     public Long userIdInToken(@RequestBody TokenForm token) {
-        return tokenService.getUserIdInToken(token.accessToken());
+        return tokenService.getUserIdInToken(token.getAccessToken());
     }
 }

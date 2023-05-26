@@ -54,6 +54,18 @@ public class UserService {
     throw new UserNotFoundException("User with id: " + id + " does not exist.");
   }
 
+  public UserDto deleteUserById(Long id) throws UserNotFoundException {
+    Optional<User> userOptional = userRepository.findById(id);
+
+    if (userOptional.isEmpty()) {
+      throw new UserNotFoundException("User with id: " + id + " does not exist.");
+    }
+    UserDto userDto = new UserDto(userOptional.get());
+    userRepository.delete(userOptional.get());
+
+    return userDto;
+  }
+
   public List<BookDto> findUserBooks(String token) throws UserNotFoundException {
     Long userId = tokenService.getUserIdInToken(token);
     Optional<User> userOptional = userRepository.findById(userId);

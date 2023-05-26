@@ -19,7 +19,7 @@ import java.util.List;
 
 @RestController
 @CrossOrigin
-@RequestMapping("v1/books")
+@RequestMapping("/v1/")
 public class BookController {
 
     @Autowired

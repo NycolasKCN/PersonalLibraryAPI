@@ -4,48 +4,48 @@ import br.com.nycdev.personallibrary.dtos.TokenDto;
 import br.com.nycdev.personallibrary.forms.LoginForm;
 import br.com.nycdev.personallibrary.forms.TokenForm;
 import br.com.nycdev.personallibrary.services.TokenService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 
 @RestController
 @CrossOrigin
-@RequestMapping("/authenticate")
+@RequestMapping("/token")
 public class AuthController {
-    @Autowired
+
     private AuthenticationManager authenticationManager;
 
-    @Autowired
     private TokenService tokenService;
 
+    public AuthController(AuthenticationManager authenticationManager, TokenService tokenService) {
+        this.authenticationManager = authenticationManager;
+        this.tokenService = tokenService;
+    }
+
     @PostMapping
-    public ResponseEntity<TokenDto> authenticationUser(@RequestBody LoginForm form) {
+    public ResponseEntity<TokenDto> generateToken(@RequestBody LoginForm form) {
         UsernamePasswordAuthenticationToken loginData = form.convert();
 
         try {
             Authentication authentication = authenticationManager.authenticate(loginData);
             String token = tokenService.generateToken(authentication);
-            return ResponseEntity.ok(new TokenDto(token));
+            return new ResponseEntity<>(new TokenDto(token), HttpStatus.OK);
         } catch (AuthenticationException e) {
-            System.out.println(e.getMessage());
-            return ResponseEntity.badRequest().build();
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
     }
 
-    @RequestMapping("/isValid")
-    @PostMapping
     public boolean isValid(@RequestBody TokenForm token) {
         System.out.println(token);
         return tokenService.isValidToken(token.accessToken());
     }
 
-    @RequestMapping("/userIdInToken")
-    @PostMapping
     public Long userIdInToken(@RequestBody TokenForm token) {
         return tokenService.getUserIdInToken(token.accessToken());
     }

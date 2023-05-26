@@ -20,12 +20,22 @@ import java.util.List;
 
 @RestController
 @CrossOrigin
-@RequestMapping("v1/users")
+@RequestMapping("/v1")
 public class UserController {
 
-    @Autowired
     private UserService userService;
 
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
+
+    @RequestMapping("/user/all")
+    @GetMapping
+    public ResponseEntity<List<UserDto>> getAllUsers() {
+        return new ResponseEntity<>(userService.getAll(), HttpStatus.FOUND);
+    }
+
+    @RequestMapping("/user")
     @PostMapping
     public ResponseEntity<UserDto> registerUser(@RequestBody UserForm userForm) {
         try {
@@ -35,40 +45,14 @@ public class UserController {
         }
     }
 
-    @GetMapping
-    public List<UserDto> getAllUsers() {
-        return userService.getAll();
-    }
-
-    @RequestMapping("/{userId}")
-    @GetMapping
-    public ResponseEntity<UserDto> getUserById(@PathVariable Long userId) {
-        try {
-            UserDto userDto = new UserDto(userService.findUserById(userId));
-            return new ResponseEntity<>(userDto, HttpStatus.FOUND);
-        } catch (UserNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
-        }
-    }
-
-    @RequestMapping("/books")
-    @GetMapping
-    public ResponseEntity<List<BookDto>> getUserBooks(@RequestHeader("accessToken") String accessToken) {
-        try {
-            return new ResponseEntity<>(userService.findUserBooks(accessToken), HttpStatus.FOUND);
-        } catch (UserNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
-        }
-    }
-
-    @RequestMapping("/books/{id}")
+    @RequestMapping("/user/{id}")
     @DeleteMapping
-    public ResponseEntity<BookDto> removeBook(@RequestHeader("accessToken") String accessToken, @PathVariable Long id) {
+    public ResponseEntity<UserDto> deleteUserById(@PathVariable Long id) {
         try {
-            return new ResponseEntity<>(userService.removeBook(accessToken, id), HttpStatus.ACCEPTED);
-        } catch (BookNotFoundException e) {
-            throw new RuntimeException(e);
+            UserDto userDto = userService.deleteUserById(id);
+            return new ResponseEntity<>(userDto, HttpStatus.ACCEPTED);
+        } catch (UserNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
     }
-
 }

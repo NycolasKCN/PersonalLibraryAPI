@@ -20,7 +20,7 @@ import java.util.List;
 
 @RestController
 @CrossOrigin
-@RequestMapping("/v1")
+@RequestMapping("/v1/user")
 public class UserController {
 
     private UserService userService;
@@ -29,13 +29,6 @@ public class UserController {
         this.userService = userService;
     }
 
-    @RequestMapping("/user/all")
-    @GetMapping
-    public ResponseEntity<List<UserDto>> getAllUsers() {
-        return new ResponseEntity<>(userService.getAll(), HttpStatus.FOUND);
-    }
-
-    @RequestMapping("/user")
     @PostMapping
     public ResponseEntity<UserDto> registerUser(@RequestBody UserForm userForm) {
         try {
@@ -45,7 +38,13 @@ public class UserController {
         }
     }
 
-    @RequestMapping("/user/{id}")
+    @RequestMapping("/all")
+    @GetMapping
+    public ResponseEntity<List<UserDto>> getAllUsers() {
+        return new ResponseEntity<>(userService.getAll(), HttpStatus.FOUND);
+    }
+
+    @RequestMapping("/{id}")
     @DeleteMapping
     public ResponseEntity<UserDto> deleteUserById(@PathVariable Long id) {
         try {

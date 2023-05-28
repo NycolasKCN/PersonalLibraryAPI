@@ -1,6 +1,7 @@
 package br.com.nycdev.personallibrary.services;
 
 import br.com.nycdev.personallibrary.dtos.BookDto;
+import br.com.nycdev.personallibrary.exceptions.AuthorizationDeniedException;
 import br.com.nycdev.personallibrary.exceptions.BookAlreadyExistsException;
 import br.com.nycdev.personallibrary.exceptions.BookNotFoundException;
 import br.com.nycdev.personallibrary.exceptions.UserNotFoundException;
@@ -17,26 +18,40 @@ import java.util.Optional;
 
 @Service
 public class BookService {
+  private final BookRepository bookRepository;
 
-  @Autowired
-  private UserService userService;
+  private final TokenService tokenService;
 
-  @Autowired
-  private BookRepository bookRepository;
+  private final UserService userService;
 
-  @Autowired
-  private TokenService tokenService;
+  public BookService(BookRepository bookRepository, TokenService tokenService, UserService userService) {
+    this.bookRepository = bookRepository;
+    this.tokenService = tokenService;
+    this.userService = userService;
+  }
 
-  public BookDto addBookToUser(String accessToken, BookForm bookForm) throws BookAlreadyExistsException, UserNotFoundException {
-    Long idUser = tokenService.getUserIdInToken(accessToken);
-    User user = userService.findUserById(idUser);
+  public BookDto addBookToUser(String token, BookForm bookForm) throws BookAlreadyExistsException, UserNotFoundException, AuthorizationDeniedException {
+    if (!hasAuthorization(token, bookForm)) {
+      throw new AuthorizationDeniedException("User id: " + bookForm.getUserId() + " has no authorization.");
+    }
+    if (isBookExists(bookForm)) {
+     throw new BookAlreadyExistsException("Book: " + bookForm.getName() + " already register.");
+    }
 
+    User owner = userService.findUserById(bookForm.getUserId());
     Book book = new Book(bookForm);
-    book.setOwner(user);
-
+    book.setOwner(owner);
     bookRepository.save(book);
-
     return new BookDto(book);
+  }
+
+  private boolean hasAuthorization(String token, BookForm bookForm) {
+    return tokenService.hasAuthorization(token, bookForm.getUserId());
+  }
+
+  private boolean isBookExists(BookForm bookForm) {
+    Optional<Book> aBook = bookRepository.findBookByName(bookForm.getName());
+    return aBook.map(book -> book.getOwner().getId().equals(bookForm.getUserId())).orElse(false);
   }
 
   public List<BookDto> getAll() {

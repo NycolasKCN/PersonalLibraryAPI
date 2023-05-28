@@ -1,6 +1,7 @@
 package br.com.nycdev.personallibrary.controllers;
 
 import br.com.nycdev.personallibrary.dtos.BookDto;
+import br.com.nycdev.personallibrary.exceptions.AuthorizationDeniedException;
 import br.com.nycdev.personallibrary.exceptions.BookAlreadyExistsException;
 import br.com.nycdev.personallibrary.exceptions.UserLoginAlreadyExistsException;
 import br.com.nycdev.personallibrary.exceptions.UserNotFoundException;
@@ -22,18 +23,22 @@ import java.util.List;
 @RequestMapping("/v1/book")
 public class BookController {
 
-    @Autowired
-    private BookService service;
+    private final BookService service;
+
+    public BookController(BookService service) {
+        this.service = service;
+    }
 
     @PostMapping
     public ResponseEntity<BookDto> addBook(@RequestHeader("Authorization") String token, @RequestBody BookForm bookForm) {
-        // TODO: 27/05/2023 Verificar a qual usuario adiconar pelo corpo da requisição, e confirmar se tem autorização para tal. 
         try {
             return new ResponseEntity<>(service.addBookToUser(token, bookForm), HttpStatus.CREATED);
         } catch (BookAlreadyExistsException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         } catch (UserNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, e.getMessage());
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        } catch (AuthorizationDeniedException e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
         }
     }
     
@@ -51,7 +56,7 @@ public class BookController {
         return null;
     }
     
-    @RequestMapping("/{id}")
+    @RequestMapping("/delete/{id}")
     @DeleteMapping
     public ResponseEntity<BookDto> deleteBookById(@RequestHeader("Authorization") String token, @PathVariable Long id) {
         // TODO: 27/05/2023 Deletar o livro com o id, verificar se tem autorização para deletar. 

@@ -31,8 +31,8 @@ public class Book {
   }
 
   public Book(BookForm form) {
-    this.name = form.getName();
-    this.author = form.getAuthor();
+    this.name = form.name();
+    this.author = form.author();
   }
 
   public String getName() {

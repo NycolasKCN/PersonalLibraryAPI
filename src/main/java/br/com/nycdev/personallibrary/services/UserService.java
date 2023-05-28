@@ -25,9 +25,9 @@ public class UserService {
   }
 
   public UserDto registerUser(UserForm userForm) throws UserLoginAlreadyExistsException {
-    Optional<User> userOptional = userRepository.findByLogin(userForm.getLogin());
+    Optional<User> userOptional = userRepository.findByLogin(userForm.login());
     if (userOptional.isPresent()) {
-      throw new UserLoginAlreadyExistsException("User with login: " +userForm.getLogin()+ " already exists.");
+      throw new UserLoginAlreadyExistsException("User with login: " +userForm.login()+ " already exists.");
     }
     User user = new User(userForm);
     userRepository.save(user);
@@ -47,7 +47,7 @@ public class UserService {
   }
 
   public UserDto deleteUserById(String token, Long id) throws UserNotFoundException, AuthorizationDeniedException{
-    Long authUserId = tokenService.getUserIdInToken(token);
+    Long authUserId = tokenService.getUserIdInToken(tokenService.recoverTokenFromHeader(token));
     Optional<User> userOptional = userRepository.findById(id);
 
     if (userOptional.isEmpty()) {

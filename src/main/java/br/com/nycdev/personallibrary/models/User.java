@@ -37,9 +37,9 @@ public class User implements UserDetails {
   }
 
   public User(UserForm userForm) {
-    this.name = userForm.getName();
-    this.login = userForm.getLogin();
-    this.password = new BCryptPasswordEncoder().encode(userForm.getPassword());
+    this.name = userForm.name();
+    this.login = userForm.login();
+    this.password = new BCryptPasswordEncoder().encode(userForm.password());
     this.role = "USER";
   }
 

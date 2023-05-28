@@ -33,24 +33,17 @@ public class TokenService {
             .compact();
   }
 
-  public boolean isValidToken(String token) {
-    try {
-      Jwts.parser().setSigningKey(this.secret).parseClaimsJws(token);
-      return true;
-    } catch (Exception e) {
-      return false;
-    }
-  }
-
-  public boolean hasAuthorization(String token, Long id) {
-    if (isValidToken(token)) {
-      return false;
-    }
+  public boolean hasAuthorization(String headerToken, Long id) {
+    String token = recoverTokenFromHeader(headerToken);
     return getUserIdInToken(token).equals(id);
   }
 
   public Long getUserIdInToken(String token) {
     Claims claims = Jwts.parser().setSigningKey(this.secret).parseClaimsJws(token).getBody();
     return Long.parseLong(claims.getSubject());
+  }
+
+  public String recoverTokenFromHeader(String token) {
+    return token.substring(7);
   }
 }

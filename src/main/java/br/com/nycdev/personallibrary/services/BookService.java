@@ -30,14 +30,14 @@ public class BookService {
   }
 
   public BookDto addBookToUser(String token, BookForm bookForm) throws BookAlreadyExistsException, UserNotFoundException, AuthorizationDeniedException {
-    if (hasNoAuthorization(token, bookForm.getUserId())) {
-      throw new AuthorizationDeniedException("User id: " + bookForm.getUserId() + " has no authorization.");
+    if (hasNoAuthorization(token, bookForm.userId())) {
+      throw new AuthorizationDeniedException("User id: " + bookForm.userId() + " has no authorization.");
     }
     if (isBookExists(bookForm)) {
-      throw new BookAlreadyExistsException("Book: " + bookForm.getName() + " already register.");
+      throw new BookAlreadyExistsException("Book: " + bookForm.name() + " already register.");
     }
 
-    User owner = userService.findUserById(bookForm.getUserId());
+    User owner = userService.findUserById(bookForm.userId());
     Book book = new Book(bookForm);
     book.setOwner(owner);
     bookRepository.save(book);
@@ -45,11 +45,11 @@ public class BookService {
   }
 
   public List<BookDto> getAll(String token, UserIdForm userId) throws AuthorizationDeniedException {
-    if (hasNoAuthorization(token, userId.getUserId())) {
-      throw new AuthorizationDeniedException("User id: " + userId.getUserId() + "has no authorization.");
+    if (hasNoAuthorization(token, userId.userId())) {
+      throw new AuthorizationDeniedException("User id: " + userId.userId() + "has no authorization.");
     }
 
-    return bookRepository.findBooksByOwnerIdIs(userId.getUserId()).stream().map(BookDto::new).toList();
+    return bookRepository.findBooksByOwnerIdIs(userId.userId()).stream().map(BookDto::new).toList();
   }
 
   public Book findBookById(String token, Long id) throws BookNotFoundException, AuthorizationDeniedException {
@@ -84,7 +84,9 @@ public class BookService {
   }
 
   private boolean isBookExists(BookForm bookForm) {
-    Optional<Book> aBook = bookRepository.findBookByName(bookForm.getName());
-    return aBook.map(book -> book.getOwner().getId().equals(bookForm.getUserId())).orElse(false);
+    Optional<Book> aBook = bookRepository.findBookByName(bookForm.name());
+    return aBook.map(book -> book.getOwner().getId().equals(bookForm.userId())).orElse(false);
   }
+
+
 }

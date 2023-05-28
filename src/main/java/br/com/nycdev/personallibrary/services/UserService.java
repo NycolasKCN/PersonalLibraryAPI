@@ -1,31 +1,28 @@
 package br.com.nycdev.personallibrary.services;
 
-import br.com.nycdev.personallibrary.dtos.BookDto;
 import br.com.nycdev.personallibrary.dtos.UserDto;
-import br.com.nycdev.personallibrary.exceptions.BookNotFoundException;
+import br.com.nycdev.personallibrary.exceptions.AuthorizationDeniedException;
 import br.com.nycdev.personallibrary.exceptions.UserLoginAlreadyExistsException;
 import br.com.nycdev.personallibrary.exceptions.UserNotFoundException;
 import br.com.nycdev.personallibrary.forms.UserForm;
 import br.com.nycdev.personallibrary.models.User;
 import br.com.nycdev.personallibrary.repositorys.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 public class UserService {
 
-  @Autowired
-  private UserRepository userRepository;
+  private final UserRepository userRepository;
 
-  @Autowired
-  private TokenService tokenService;
+  private final TokenService tokenService;
 
-  @Autowired
-  private BookService bookService;
+  public UserService(UserRepository userRepository, TokenService tokenService) {
+    this.userRepository = userRepository;
+    this.tokenService = tokenService;
+  }
 
   public UserDto registerUser(UserForm userForm) throws UserLoginAlreadyExistsException {
     Optional<User> userOptional = userRepository.findByLogin(userForm.getLogin());
@@ -49,30 +46,20 @@ public class UserService {
     throw new UserNotFoundException("User with id: " + id + " does not exist.");
   }
 
-  public UserDto deleteUserById(Long id) throws UserNotFoundException {
+  public UserDto deleteUserById(String token, Long id) throws UserNotFoundException, AuthorizationDeniedException{
+    Long authUserId = tokenService.getUserIdInToken(token);
     Optional<User> userOptional = userRepository.findById(id);
 
     if (userOptional.isEmpty()) {
       throw new UserNotFoundException("User with id: " + id + " does not exist.");
     }
+    if (!authUserId.equals(id)) {
+      throw new AuthorizationDeniedException("User has no permission.");
+    }
+
     UserDto userDto = new UserDto(userOptional.get());
     userRepository.delete(userOptional.get());
 
     return userDto;
-  }
-
-  public List<BookDto> findUserBooks(String token) throws UserNotFoundException {
-    Long userId = tokenService.getUserIdInToken(token);
-    Optional<User> userOptional = userRepository.findById(userId);
-
-    if (userOptional.isEmpty()) {
-      throw new UserNotFoundException("User with id: " + userId + " not founded.");
-    }
-    return bookService.findBooksByUser(userOptional.get());
-  }
-
-  public BookDto removeBook(String accessToken, Long id) throws BookNotFoundException {
-    Long userId = tokenService.getUserIdInToken(accessToken);
-    return bookService.removeBookById(userId, id);
   }
 }

@@ -2,6 +2,7 @@ package br.com.nycdev.personallibrary.controllers;
 
 import br.com.nycdev.personallibrary.dtos.BookDto;
 import br.com.nycdev.personallibrary.dtos.UserDto;
+import br.com.nycdev.personallibrary.exceptions.AuthorizationDeniedException;
 import br.com.nycdev.personallibrary.exceptions.BookNotFoundException;
 import br.com.nycdev.personallibrary.exceptions.UserLoginAlreadyExistsException;
 import br.com.nycdev.personallibrary.exceptions.UserNotFoundException;
@@ -23,7 +24,7 @@ import java.util.List;
 @RequestMapping("/v1/user")
 public class UserController {
 
-    private UserService userService;
+    private final UserService userService;
 
     public UserController(UserService userService) {
         this.userService = userService;
@@ -46,12 +47,14 @@ public class UserController {
 
     @RequestMapping("/{id}")
     @DeleteMapping
-    public ResponseEntity<UserDto> deleteUserById(@PathVariable Long id) {
+    public ResponseEntity<UserDto> deleteUserById(@RequestHeader("Authorization") String token, @PathVariable Long id) {
         try {
-            UserDto userDto = userService.deleteUserById(id);
+            UserDto userDto = userService.deleteUserById(token, id);
             return new ResponseEntity<>(userDto, HttpStatus.ACCEPTED);
         } catch (UserNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        } catch (AuthorizationDeniedException e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
         }
     }
 }

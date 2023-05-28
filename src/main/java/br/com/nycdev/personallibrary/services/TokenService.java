@@ -6,6 +6,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.web.csrf.InvalidCsrfTokenException;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -39,6 +40,13 @@ public class TokenService {
         } catch (Exception e) {
             return false;
         }
+    }
+
+    public boolean hasAuthorization(String token, Long id) {
+        if (isValidToken(token)) {
+            return false;
+        }
+        return getUserIdInToken(token).equals(id);
     }
 
     public Long getUserIdInToken(String token) {

@@ -6,11 +6,10 @@ import br.com.nycdev.personallibrary.exceptions.BookAlreadyExistsException;
 import br.com.nycdev.personallibrary.exceptions.BookNotFoundException;
 import br.com.nycdev.personallibrary.exceptions.UserNotFoundException;
 import br.com.nycdev.personallibrary.forms.BookForm;
+import br.com.nycdev.personallibrary.forms.UserIdForm;
 import br.com.nycdev.personallibrary.models.Book;
 import br.com.nycdev.personallibrary.models.User;
 import br.com.nycdev.personallibrary.repositorys.BookRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -31,11 +30,11 @@ public class BookService {
   }
 
   public BookDto addBookToUser(String token, BookForm bookForm) throws BookAlreadyExistsException, UserNotFoundException, AuthorizationDeniedException {
-    if (!hasAuthorization(token, bookForm)) {
+    if (hasNoAuthorization(token, bookForm.getUserId())) {
       throw new AuthorizationDeniedException("User id: " + bookForm.getUserId() + " has no authorization.");
     }
     if (isBookExists(bookForm)) {
-     throw new BookAlreadyExistsException("Book: " + bookForm.getName() + " already register.");
+      throw new BookAlreadyExistsException("Book: " + bookForm.getName() + " already register.");
     }
 
     User owner = userService.findUserById(bookForm.getUserId());
@@ -45,34 +44,47 @@ public class BookService {
     return new BookDto(book);
   }
 
-  private boolean hasAuthorization(String token, BookForm bookForm) {
-    return tokenService.hasAuthorization(token, bookForm.getUserId());
+  public List<BookDto> getAll(String token, UserIdForm userId) throws AuthorizationDeniedException {
+    if (hasNoAuthorization(token, userId.getUserId())) {
+      throw new AuthorizationDeniedException("User id: " + userId.getUserId() + "has no authorization.");
+    }
+
+    return bookRepository.findBooksByOwnerIdIs(userId.getUserId()).stream().map(BookDto::new).toList();
+  }
+
+  public Book findBookById(String token, Long id) throws BookNotFoundException, AuthorizationDeniedException {
+    Optional<Book> optionalBook = bookRepository.findById(id);
+    if (optionalBook.isEmpty()) {
+      throw new BookNotFoundException("Book with id: " + id + " not found.");
+    }
+    Long ownerId = optionalBook.get().getOwner().getId();
+    if (hasNoAuthorization(token, ownerId)) {
+      throw new AuthorizationDeniedException("user with id: " + tokenService.getUserIdInToken(token) + " does not have authorization");
+    }
+    return optionalBook.get();
+  }
+
+  public BookDto removeBookById(String token, Long id) throws BookNotFoundException, AuthorizationDeniedException {
+    Optional<Book> bookOptional = bookRepository.findById(id);
+    if (bookOptional.isEmpty()) {
+      throw new BookNotFoundException("Could not remove book with id: " + id);
+    }
+    Long ownerId = bookOptional.get().getOwner().getId();
+    if (hasNoAuthorization(token, ownerId)) {
+      throw new AuthorizationDeniedException("user with id: " + tokenService.getUserIdInToken(token) + " does not have authorization");
+    }
+    Book book = bookOptional.get();
+    bookRepository.delete(book);
+    bookRepository.flush();
+    return new BookDto(book);
+  }
+
+  private boolean hasNoAuthorization(String token, Long userId) {
+    return !tokenService.hasAuthorization(token, userId);
   }
 
   private boolean isBookExists(BookForm bookForm) {
     Optional<Book> aBook = bookRepository.findBookByName(bookForm.getName());
     return aBook.map(book -> book.getOwner().getId().equals(bookForm.getUserId())).orElse(false);
-  }
-
-  public List<BookDto> getAll() {
-    return bookRepository.findAll().stream().map(BookDto::new).toList();
-  }
-
-  public List<BookDto> findBooksByUser(User user) {
-    return bookRepository.findBooksByOwnerIs(user).stream().map(BookDto::new).toList();
-  }
-
-  public BookDto removeBookById(Long userId, Long id) throws BookNotFoundException {
-    Optional<Book> bookOptional = bookRepository.findById(id);
-    if (bookOptional.isEmpty()) {
-      throw new BookNotFoundException("Could not remove book with id: " + id);
-    }
-    Book book = bookOptional.get();
-    if (!book.getOwner().getId().equals(userId)) {
-      throw new AccessDeniedException("Could not remove book with id: " + id + " because user with id: " + userId + " is not owner");
-    }
-    bookRepository.delete(book);
-    bookRepository.flush();
-    return new BookDto(book);
   }
 }

@@ -28,7 +28,7 @@ public class AuthController {
     this.tokenService = tokenService;
   }
 
-  @PostMapping
+  @GetMapping
   public ResponseEntity<TokenDto> generateToken(@RequestBody LoginForm form) {
     UsernamePasswordAuthenticationToken loginData = form.convert();
 

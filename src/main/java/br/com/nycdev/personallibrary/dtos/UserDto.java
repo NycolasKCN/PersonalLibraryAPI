@@ -1,11 +1,6 @@
 package br.com.nycdev.personallibrary.dtos;
 
-import br.com.nycdev.personallibrary.models.Book;
 import br.com.nycdev.personallibrary.models.User;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-
-import java.util.List;
 
 public class UserDto {
   private long id;

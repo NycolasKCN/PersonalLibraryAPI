@@ -50,9 +50,9 @@ public class UserController {
   public ResponseEntity<UserDto> deleteUserById(@RequestHeader("Authorization") String token, @PathVariable Long id) {
     try {
       UserDto userDto = userService.deleteUserById(token, id);
-      return new ResponseEntity<>(userDto, HttpStatus.ACCEPTED);
+      return new ResponseEntity<>(userDto, HttpStatus.OK);
     } catch (UserNotFoundException e) {
-      throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
     } catch (AuthorizationDeniedException e) {
       throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
     }

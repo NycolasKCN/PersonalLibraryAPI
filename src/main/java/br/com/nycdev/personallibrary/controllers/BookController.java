@@ -31,20 +31,18 @@ public class BookController {
   public ResponseEntity<BookDto> addBook(@RequestHeader("Authorization") String token, @RequestBody BookForm bookForm) {
     try {
       return new ResponseEntity<>(service.addBookToUser(token, bookForm), HttpStatus.CREATED);
-    } catch (BookAlreadyExistsException e) {
+    } catch (BookAlreadyExistsException | UserNotFoundException e) {
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
-    } catch (UserNotFoundException e) {
-      throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
     } catch (AuthorizationDeniedException e) {
       throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
     }
   }
 
-  @PostMapping("/all")
+  @RequestMapping("/all")
   @GetMapping
   public ResponseEntity<List<BookDto>> findAllBooksFromUser(@RequestHeader("Authorization") String token, @RequestBody UserIdForm userIdForm) {
     try {
-      return new ResponseEntity<>(service.getAll(token, userIdForm), HttpStatus.FOUND);
+      return new ResponseEntity<>(service.getAll(token, userIdForm), HttpStatus.OK);
     } catch (AuthorizationDeniedException e) {
       throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
     }
@@ -54,11 +52,11 @@ public class BookController {
   @GetMapping
   public ResponseEntity<Book> findBookById(@RequestHeader("Authorization") String token, @PathVariable Long id) {
     try {
-      return new ResponseEntity<>(service.findBookById(token, id), HttpStatus.FOUND);
+      return new ResponseEntity<>(service.findBookById(token, id), HttpStatus.OK);
     } catch (AuthorizationDeniedException e) {
       throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
     } catch (BookNotFoundException e) {
-      throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
     }
   }
 
@@ -66,11 +64,11 @@ public class BookController {
   @DeleteMapping
   public ResponseEntity<BookDto> deleteBookById(@RequestHeader("Authorization") String token, @PathVariable Long id) {
     try {
-      return new ResponseEntity<>(service.removeBookById(token, id), HttpStatus.ACCEPTED);
+      return new ResponseEntity<>(service.removeBookById(token, id), HttpStatus.OK);
     } catch (AuthorizationDeniedException e) {
       throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
     } catch (BookNotFoundException e) {
-      throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
     }
   }
 

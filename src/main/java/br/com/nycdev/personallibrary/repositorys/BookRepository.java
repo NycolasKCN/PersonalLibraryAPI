@@ -9,12 +9,12 @@ import java.util.Optional;
 
 public interface BookRepository extends JpaRepository<Book, Long> {
 
-    @Override
-    Optional<Book> findById(Long aLong);
+  @Override
+  Optional<Book> findById(Long aLong);
 
-    Optional<Book> findBookByName(String name);
-    Optional<Book> findBookByAuthor(String author);
+  Optional<Book> findBookByName(String name);
+  Optional<Book> findBookByAuthor(String author);
 
-    List<Book> findBooksByOwnerIdIs(Long ownerId);
-    Optional<Book> removeBookById(Long id);
+  List<Book> findBooksByOwnerIdIs(Long ownerId);
+  Optional<Book> removeBookById(Long id);
 }

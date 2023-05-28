@@ -13,127 +13,127 @@ import java.util.List;
 @Entity
 @Table(name="tb_users")
 public class User implements UserDetails {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-    private String name;
+  private String name;
 
-    private String login;
-
-
-    private String password;
-
-    private String role;
-
-    @OneToMany(mappedBy = "owner")
-    private List<Book> books = new ArrayList<>();
-
-    public User(String name, String login, String password, String role){
-        this.name = name;
-        this.login = login;
-        this.password = new BCryptPasswordEncoder().encode(password);
-        this.role = role;
-    }
-
-    public User(UserForm userForm) {
-        this.name = userForm.getName();
-        this.login = userForm.getLogin();
-        this.password = new BCryptPasswordEncoder().encode(userForm.getPassword());
-        this.role = "USER";
-    }
-
-    protected User() { }
+  private String login;
 
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+  private String password;
 
-    public Long getId() {
-        return id;
-    }
+  private String role;
 
-    public String getName() {
-        return name;
-    }
+  @OneToMany(mappedBy = "owner")
+  private List<Book> books = new ArrayList<>();
 
-    public void setName(String userName) {
-        this.name = userName;
-    }
+  public User(String name, String login, String password, String role){
+    this.name = name;
+    this.login = login;
+    this.password = new BCryptPasswordEncoder().encode(password);
+    this.role = role;
+  }
 
-    @Override
-    public String getPassword() {
-        return password;
-    }
+  public User(UserForm userForm) {
+    this.name = userForm.getName();
+    this.login = userForm.getLogin();
+    this.password = new BCryptPasswordEncoder().encode(userForm.getPassword());
+    this.role = "USER";
+  }
 
-    public void setPassword(String userPassword) {
-        this.password = userPassword;
-    }
+  protected User() { }
 
-    @Override
-    public String getUsername() {
-        return login;
-    }
 
-    public void setUsername(String login) {
-        this.login = login;
-    }
+  public void setId(Long id) {
+    this.id = id;
+  }
 
-    public String getRole() {
-        return role;
-    }
+  public Long getId() {
+    return id;
+  }
 
-    public void setRole(String role) {
-        this.role = role;
-    }
+  public String getName() {
+    return name;
+  }
 
-    public List<Book> getBooks() {
-        return books;
-    }
+  public void setName(String userName) {
+    this.name = userName;
+  }
 
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
-    }
+  @Override
+  public String getPassword() {
+    return password;
+  }
 
-    @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
+  public void setPassword(String userPassword) {
+    this.password = userPassword;
+  }
 
-    @Override
-    public boolean isAccountNonLocked() {
-        return true;
-    }
+  @Override
+  public String getUsername() {
+    return login;
+  }
 
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
+  public void setUsername(String login) {
+    this.login = login;
+  }
 
-    @Override
-    public boolean isEnabled() {
-        return true;
-    }
+  public String getRole() {
+    return role;
+  }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+  public void setRole(String role) {
+    this.role = role;
+  }
 
-        User user = (User) o;
+  public List<Book> getBooks() {
+    return books;
+  }
 
-        if (!id.equals(user.id)) return false;
-        return name.equals(user.name);
-    }
+  @Override
+  public Collection<? extends GrantedAuthority> getAuthorities() {
+    return null;
+  }
 
-    @Override
-    public int hashCode() {
-        int result = id.hashCode();
-        result = 31 * result + name.hashCode();
-        return result;
-    }
+  @Override
+  public boolean isAccountNonExpired() {
+    return true;
+  }
+
+  @Override
+  public boolean isAccountNonLocked() {
+    return true;
+  }
+
+  @Override
+  public boolean isCredentialsNonExpired() {
+    return true;
+  }
+
+  @Override
+  public boolean isEnabled() {
+    return true;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+
+    User user = (User) o;
+
+    if (!id.equals(user.id)) return false;
+    return name.equals(user.name);
+  }
+
+  @Override
+  public int hashCode() {
+    int result = id.hashCode();
+    result = 31 * result + name.hashCode();
+    return result;
+  }
 
 
 }

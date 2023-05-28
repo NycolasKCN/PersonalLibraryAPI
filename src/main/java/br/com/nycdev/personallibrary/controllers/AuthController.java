@@ -19,34 +19,34 @@ import org.springframework.web.server.ResponseStatusException;
 @RequestMapping("/token")
 public class AuthController {
 
-    private AuthenticationManager authenticationManager;
+  private AuthenticationManager authenticationManager;
 
-    private TokenService tokenService;
+  private TokenService tokenService;
 
-    public AuthController(AuthenticationManager authenticationManager, TokenService tokenService) {
-        this.authenticationManager = authenticationManager;
-        this.tokenService = tokenService;
+  public AuthController(AuthenticationManager authenticationManager, TokenService tokenService) {
+    this.authenticationManager = authenticationManager;
+    this.tokenService = tokenService;
+  }
+
+  @PostMapping
+  public ResponseEntity<TokenDto> generateToken(@RequestBody LoginForm form) {
+    UsernamePasswordAuthenticationToken loginData = form.convert();
+
+    try {
+      Authentication authentication = authenticationManager.authenticate(loginData);
+      String token = tokenService.generateToken(authentication);
+      return new ResponseEntity<>(new TokenDto(token), HttpStatus.OK);
+    } catch (AuthenticationException e) {
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
     }
+  }
 
-    @PostMapping
-    public ResponseEntity<TokenDto> generateToken(@RequestBody LoginForm form) {
-        UsernamePasswordAuthenticationToken loginData = form.convert();
+  public boolean isValid(@RequestBody TokenForm token) {
+    System.out.println(token);
+    return tokenService.isValidToken(token.getAccessToken());
+  }
 
-        try {
-            Authentication authentication = authenticationManager.authenticate(loginData);
-            String token = tokenService.generateToken(authentication);
-            return new ResponseEntity<>(new TokenDto(token), HttpStatus.OK);
-        } catch (AuthenticationException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
-        }
-    }
-
-    public boolean isValid(@RequestBody TokenForm token) {
-        System.out.println(token);
-        return tokenService.isValidToken(token.getAccessToken());
-    }
-
-    public Long userIdInToken(@RequestBody TokenForm token) {
-        return tokenService.getUserIdInToken(token.getAccessToken());
-    }
+  public Long userIdInToken(@RequestBody TokenForm token) {
+    return tokenService.getUserIdInToken(token.getAccessToken());
+  }
 }

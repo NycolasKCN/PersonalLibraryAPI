@@ -12,15 +12,15 @@ import java.util.Optional;
 
 @Service
 public class AuthService implements UserDetailsService {
-    @Autowired
-    private UserRepository userRepository;
-    @Override
-    public UserDetails loadUserByUsername(String login) throws UsernameNotFoundException {
-        Optional<User> user = userRepository.findByLogin(login);
+  @Autowired
+  private UserRepository userRepository;
+  @Override
+  public UserDetails loadUserByUsername(String login) throws UsernameNotFoundException {
+    Optional<User> user = userRepository.findByLogin(login);
 
-        if (user.isPresent()) {
-            return user.get();
-        }
-        throw new UsernameNotFoundException("User with login: " + login + " not founded. Threw by AuthService class.");
+    if (user.isPresent()) {
+      return user.get();
     }
+    throw new UsernameNotFoundException("User with login: " + login + " not founded. Threw by AuthService class.");
+  }
 }

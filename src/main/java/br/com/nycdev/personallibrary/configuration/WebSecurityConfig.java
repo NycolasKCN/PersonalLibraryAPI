@@ -17,40 +17,40 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig {
-    private final AuthenticationConfiguration authConfiguration;
+  private final AuthenticationConfiguration authConfiguration;
 
-    @Autowired
-    private AuthService authService;
+  @Autowired
+  private AuthService authService;
 
-    public WebSecurityConfig(AuthenticationConfiguration authConfiguration) {
-        this.authConfiguration = authConfiguration;
-    }
+  public WebSecurityConfig(AuthenticationConfiguration authConfiguration) {
+    this.authConfiguration = authConfiguration;
+  }
 
-    @Bean
-    protected AuthenticationManager authenticationManager() throws Exception {
-        return authConfiguration.getAuthenticationManager();
-    }
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+  @Bean
+  protected AuthenticationManager authenticationManager() throws Exception {
+    return authConfiguration.getAuthenticationManager();
+  }
+  @Bean
+  public PasswordEncoder passwordEncoder() {
+    return new BCryptPasswordEncoder();
+  }
 
-    public void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(this.authService).passwordEncoder(passwordEncoder());
-    }
+  public void configure(AuthenticationManagerBuilder auth) throws Exception {
+    auth.userDetailsService(this.authService).passwordEncoder(passwordEncoder());
+  }
 
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+  @Bean
+  public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 //        return http.csrf().disable()
 //                .authorizeHttpRequests()
 //                .requestMatchers("authenticate").permitAll()
 //                .requestMatchers("/v1/books").permitAll()
 //                .anyRequest().authenticated()
 //                .and().build();
-        return http.csrf().disable()
-                .authorizeHttpRequests()
-                .anyRequest().permitAll()
-                .and().headers().frameOptions().sameOrigin()
-                .and().build();
-    }
+    return http.csrf().disable()
+            .authorizeHttpRequests()
+            .anyRequest().permitAll()
+            .and().headers().frameOptions().sameOrigin()
+            .and().build();
+  }
 }

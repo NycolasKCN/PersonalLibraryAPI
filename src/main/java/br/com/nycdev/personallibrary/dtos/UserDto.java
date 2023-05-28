@@ -8,42 +8,42 @@ import jakarta.persistence.OneToMany;
 import java.util.List;
 
 public class UserDto {
-    private long id;
-    private String name;
-    private String login;
+  private long id;
+  private String name;
+  private String login;
 
-    public UserDto() {
+  public UserDto() {
 
-    }
+  }
 
-    public UserDto(User user) {
-        this.id = user.getId();
-        this.name = user.getName();
-        this.login = user.getUsername();
-    }
+  public UserDto(User user) {
+    this.id = user.getId();
+    this.name = user.getName();
+    this.login = user.getUsername();
+  }
 
-    public long getId() {
-        return id;
-    }
+  public long getId() {
+    return id;
+  }
 
-    public void setId(long id) {
-        this.id = id;
-    }
+  public void setId(long id) {
+    this.id = id;
+  }
 
-    public String getName() {
-        return name;
-    }
+  public String getName() {
+    return name;
+  }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+  public void setName(String name) {
+    this.name = name;
+  }
 
-    public String getLogin() {
-        return login;
-    }
+  public String getLogin() {
+    return login;
+  }
 
-    public void setLogin(String login) {
-        this.login = login;
-    }
+  public void setLogin(String login) {
+    this.login = login;
+  }
 
 }

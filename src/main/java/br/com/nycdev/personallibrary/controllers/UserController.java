@@ -24,37 +24,37 @@ import java.util.List;
 @RequestMapping("/v1/user")
 public class UserController {
 
-    private final UserService userService;
+  private final UserService userService;
 
-    public UserController(UserService userService) {
-        this.userService = userService;
-    }
+  public UserController(UserService userService) {
+    this.userService = userService;
+  }
 
-    @PostMapping
-    public ResponseEntity<UserDto> registerUser(@RequestBody UserForm userForm) {
-        try {
-            return new ResponseEntity<>(userService.registerUser(userForm), HttpStatus.CREATED);
-        } catch (UserLoginAlreadyExistsException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
-        }
+  @PostMapping
+  public ResponseEntity<UserDto> registerUser(@RequestBody UserForm userForm) {
+    try {
+      return new ResponseEntity<>(userService.registerUser(userForm), HttpStatus.CREATED);
+    } catch (UserLoginAlreadyExistsException e) {
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
     }
+  }
 
-    @RequestMapping("/all")
-    @GetMapping
-    public ResponseEntity<List<UserDto>> getAllUsers() {
-        return new ResponseEntity<>(userService.getAll(), HttpStatus.FOUND);
-    }
+  @RequestMapping("/all")
+  @GetMapping
+  public ResponseEntity<List<UserDto>> getAllUsers() {
+    return new ResponseEntity<>(userService.getAll(), HttpStatus.FOUND);
+  }
 
-    @RequestMapping("/{id}")
-    @DeleteMapping
-    public ResponseEntity<UserDto> deleteUserById(@RequestHeader("Authorization") String token, @PathVariable Long id) {
-        try {
-            UserDto userDto = userService.deleteUserById(token, id);
-            return new ResponseEntity<>(userDto, HttpStatus.ACCEPTED);
-        } catch (UserNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
-        } catch (AuthorizationDeniedException e) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
-        }
+  @RequestMapping("/{id}")
+  @DeleteMapping
+  public ResponseEntity<UserDto> deleteUserById(@RequestHeader("Authorization") String token, @PathVariable Long id) {
+    try {
+      UserDto userDto = userService.deleteUserById(token, id);
+      return new ResponseEntity<>(userDto, HttpStatus.ACCEPTED);
+    } catch (UserNotFoundException e) {
+      throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+    } catch (AuthorizationDeniedException e) {
+      throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
     }
+  }
 }

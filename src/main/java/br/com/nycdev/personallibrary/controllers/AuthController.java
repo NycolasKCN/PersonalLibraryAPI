@@ -28,14 +28,14 @@ public class AuthController {
     this.tokenService = tokenService;
   }
 
-  @GetMapping
+  @PostMapping
   public ResponseEntity<TokenDto> generateToken(@RequestBody LoginForm form) {
     UsernamePasswordAuthenticationToken loginData = form.convert();
 
     try {
       Authentication authentication = authenticationManager.authenticate(loginData);
-      String token = tokenService.generateToken(authentication);
-      return new ResponseEntity<>(new TokenDto(token), HttpStatus.OK);
+      TokenDto tokenDto = tokenService.generateToken(authentication);
+      return new ResponseEntity<>(tokenDto, HttpStatus.OK);
     } catch (AuthenticationException e) {
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
     }

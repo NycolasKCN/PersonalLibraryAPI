@@ -1,9 +1,11 @@
 package br.com.nycdev.personallibrary.services;
 
+import br.com.nycdev.personallibrary.dtos.TokenDto;
 import br.com.nycdev.personallibrary.models.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.apache.el.parser.Token;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.csrf.InvalidCsrfTokenException;
@@ -19,18 +21,20 @@ public class TokenService {
   @Value("${personalLibrary.jwt.secret}")
   private String secret;
 
-  public String generateToken(Authentication authentication) {
+  public TokenDto generateToken(Authentication authentication) {
     User loggedUser = (User) authentication.getPrincipal();
     Date today = new Date();
     Date expirationDate = new Date((today.getTime() + Long.parseLong(expiration)));
 
-    return Jwts.builder()
+    String token = Jwts.builder()
             .setIssuer("PersonalLibrary")
             .setSubject(loggedUser.getId().toString())
             .setIssuedAt(today)
             .setExpiration(expirationDate)
             .signWith(SignatureAlgorithm.HS256, secret)
             .compact();
+
+    return new TokenDto(loggedUser, token);
   }
 
   public boolean hasAuthorization(String headerToken, Long id) {

@@ -49,7 +49,7 @@ public class BookService {
       throw new AuthorizationDeniedException("User id: " + userId.userId() + "has no authorization.");
     }
 
-    return bookRepository.findBooksByOwnerIdIs(userId.userId()).stream().map(BookDto::new).toList();
+    return bookRepository.findBooksByOwnerId(userId.userId()).stream().map(BookDto::new).toList();
   }
 
   public Book findBookById(String token, Long id) throws BookNotFoundException, AuthorizationDeniedException {
@@ -77,6 +77,11 @@ public class BookService {
     bookRepository.delete(book);
     bookRepository.flush();
     return new BookDto(book);
+  }
+
+  public List<Book> findBooksByName(String token, String name) {
+    // TODO: 01/06/2023
+    return null;
   }
 
   private boolean hasNoAuthorization(String token, Long userId) {

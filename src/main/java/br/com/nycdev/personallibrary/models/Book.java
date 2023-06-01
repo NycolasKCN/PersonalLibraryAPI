@@ -19,6 +19,7 @@ public class Book {
   private String name;
 
   private String author;
+  private String pages;
   @ManyToOne
   private User owner;
 
@@ -33,6 +34,7 @@ public class Book {
   public Book(BookForm form) {
     this.name = form.name();
     this.author = form.author();
+    this.pages = form.pages();
   }
 
   public String getName() {
@@ -65,6 +67,14 @@ public class Book {
 
   public User getOwner() {
     return this.owner;
+  }
+
+  public String getPages() {
+    return pages;
+  }
+
+  public void setPages(String pages) {
+    this.pages = pages;
   }
 
   @Override

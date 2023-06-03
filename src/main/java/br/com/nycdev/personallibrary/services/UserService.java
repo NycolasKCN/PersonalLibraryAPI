@@ -47,7 +47,7 @@ public class UserService {
   }
 
   public UserDto deleteUserById(String token, Long id) throws UserNotFoundException, AuthorizationDeniedException{
-    Long authUserId = tokenService.getUserIdInToken(tokenService.recoverTokenFromHeader(token));
+    Long authUserId = tokenService.getUserIdInToken(token);
     Optional<User> userOptional = userRepository.findById(id);
 
     if (userOptional.isEmpty()) {

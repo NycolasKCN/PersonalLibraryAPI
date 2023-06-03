@@ -72,4 +72,25 @@ public class BookController {
     }
   }
 
+  // TODO: 03/06/2023 REFAZER ISSO AQUI PORQUE TÁ MUITO FEIO
+  @RequestMapping("/findByName/{name}")
+  @GetMapping
+  public ResponseEntity<List<BookDto>> findBooksWithName(@RequestHeader("Authorization") String token, @PathVariable String name) {
+    try {
+      return new ResponseEntity<>(service.findBooksByName(token, name), HttpStatus.OK);
+    } catch (UserNotFoundException e) {
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+    }
+  }
+
+  @RequestMapping("/findByAuthor/{author}")
+  @GetMapping
+  public ResponseEntity<List<BookDto>> findBooksWithAuthor(@RequestHeader("Authorization") String token, @PathVariable String author) {
+    try {
+      return new ResponseEntity<>(service.findBooksByAuthor(token, author), HttpStatus.OK);
+    } catch (UserNotFoundException e) {
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+    }
+  }
+
 }

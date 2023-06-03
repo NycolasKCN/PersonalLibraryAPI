@@ -38,11 +38,11 @@ public class TokenService {
   }
 
   public boolean hasAuthorization(String headerToken, Long id) {
-    String token = recoverTokenFromHeader(headerToken);
-    return getUserIdInToken(token).equals(id);
+    return getUserIdInToken(headerToken).equals(id);
   }
 
-  public Long getUserIdInToken(String token) {
+  public Long getUserIdInToken(String headerToken) {
+    String token = recoverTokenFromHeader(headerToken);
     Claims claims = Jwts.parser().setSigningKey(this.secret).parseClaimsJws(token).getBody();
     return Long.parseLong(claims.getSubject());
   }

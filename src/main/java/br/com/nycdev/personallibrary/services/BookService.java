@@ -79,9 +79,16 @@ public class BookService {
     return new BookDto(book);
   }
 
-  public List<Book> findBooksByName(String token, String name) {
-    // TODO: 01/06/2023
-    return null;
+  public List<BookDto> findBooksByName(String token, String name) throws UserNotFoundException {
+    User user = userService.findUserById(tokenService.getUserIdInToken(token));
+    List<Book> books = bookRepository.findBooksByNameContainsAndOwnerIdIs(name, user.getId());
+    return books.stream().map(BookDto::new).toList();
+  }
+
+  public List<BookDto> findBooksByAuthor(String token, String author) throws UserNotFoundException {
+    User user = userService.findUserById(tokenService.getUserIdInToken(token));
+    List<Book> books = bookRepository.findBooksByAuthorContainsAndOwnerIdIs(author, user.getId());
+    return books.stream().map(BookDto::new).toList();
   }
 
   private boolean hasNoAuthorization(String token, Long userId) {
@@ -92,6 +99,4 @@ public class BookService {
     Optional<Book> aBook = bookRepository.findBookByName(bookForm.name());
     return aBook.map(book -> book.getOwner().getId().equals(bookForm.userId())).orElse(false);
   }
-
-
 }

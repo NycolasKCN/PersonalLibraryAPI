@@ -6,6 +6,7 @@ import br.com.nycdev.personallibrary.exceptions.BookAlreadyExistsException;
 import br.com.nycdev.personallibrary.exceptions.BookNotFoundException;
 import br.com.nycdev.personallibrary.exceptions.UserNotFoundException;
 import br.com.nycdev.personallibrary.forms.BookForm;
+import br.com.nycdev.personallibrary.forms.QueryForm;
 import br.com.nycdev.personallibrary.forms.UserIdForm;
 import br.com.nycdev.personallibrary.models.Book;
 import br.com.nycdev.personallibrary.models.User;
@@ -17,6 +18,9 @@ import java.util.Optional;
 
 @Service
 public class BookService {
+  private final int SEARCH_NAME = 1;
+  private final int SEARCH_AUTHOR = 2;
+
   private final BookRepository bookRepository;
 
   private final TokenService tokenService;
@@ -77,6 +81,15 @@ public class BookService {
     bookRepository.delete(book);
     bookRepository.flush();
     return new BookDto(book);
+  }
+
+  public List<BookDto> findBooks(String token, QueryForm form) throws UserNotFoundException{
+    if (form.option() == SEARCH_NAME) {
+      return findBooksByName(token, form.query());
+    } else if (form.option() == SEARCH_AUTHOR) {
+      return findBooksByAuthor(token, form.query());
+    }
+    throw new IllegalArgumentException("Option not valid. Use 1 to find books by name or 2 to find books by author.");
   }
 
   public List<BookDto> findBooksByName(String token, String name) throws UserNotFoundException {

@@ -6,6 +6,7 @@ import br.com.nycdev.personallibrary.exceptions.BookAlreadyExistsException;
 import br.com.nycdev.personallibrary.exceptions.BookNotFoundException;
 import br.com.nycdev.personallibrary.exceptions.UserNotFoundException;
 import br.com.nycdev.personallibrary.forms.BookForm;
+import br.com.nycdev.personallibrary.forms.QueryForm;
 import br.com.nycdev.personallibrary.forms.UserIdForm;
 import br.com.nycdev.personallibrary.models.Book;
 import br.com.nycdev.personallibrary.services.BookService;
@@ -72,25 +73,13 @@ public class BookController {
     }
   }
 
-  // TODO: 03/06/2023 REFAZER ISSO AQUI PORQUE TÁ MUITO FEIO
-  @RequestMapping("/findByName/{name}")
+  @RequestMapping("/search")
   @GetMapping
-  public ResponseEntity<List<BookDto>> findBooksWithName(@RequestHeader("Authorization") String token, @PathVariable String name) {
+  public ResponseEntity<List<BookDto>> findBooks(@RequestHeader("Authorization") String token, @RequestBody QueryForm form) {
     try {
-      return new ResponseEntity<>(service.findBooksByName(token, name), HttpStatus.OK);
-    } catch (UserNotFoundException e) {
+      return new ResponseEntity<>(service.findBooks(token, form), HttpStatus.OK);
+    } catch (UserNotFoundException | IllegalArgumentException e) {
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
     }
   }
-
-  @RequestMapping("/findByAuthor/{author}")
-  @GetMapping
-  public ResponseEntity<List<BookDto>> findBooksWithAuthor(@RequestHeader("Authorization") String token, @PathVariable String author) {
-    try {
-      return new ResponseEntity<>(service.findBooksByAuthor(token, author), HttpStatus.OK);
-    } catch (UserNotFoundException e) {
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
-    }
-  }
-
 }

@@ -10,12 +10,13 @@ public class TokenDto {
   public TokenDto(String accessToken) {
     this.token = accessToken;
   }
-  
+
   public TokenDto(User user, String token) {
     this.id = user.getId();
     this.name = user.getName();
     this.token = token;
   }
+
   public String getToken() {
     return token;
   }

@@ -27,7 +27,7 @@ public class UserService {
   public UserDto registerUser(UserForm userForm) throws UserLoginAlreadyExistsException {
     Optional<User> userOptional = userRepository.findByLogin(userForm.login());
     if (userOptional.isPresent()) {
-      throw new UserLoginAlreadyExistsException("User with login: " +userForm.login()+ " already exists.");
+      throw new UserLoginAlreadyExistsException("User with login: " + userForm.login() + " already exists.");
     }
     User user = new User(userForm);
     userRepository.save(user);
@@ -38,7 +38,7 @@ public class UserService {
     return userRepository.findAll().stream().map(UserDto::new).toList();
   }
 
-  public User findUserById(Long id) throws UserNotFoundException{
+  public User findUserById(Long id) throws UserNotFoundException {
     Optional<User> userOptional = userRepository.findById(id);
     if (userOptional.isPresent()) {
       return userOptional.get();
@@ -46,7 +46,7 @@ public class UserService {
     throw new UserNotFoundException("User with id: " + id + " does not exist.");
   }
 
-  public UserDto deleteUserById(String token, Long id) throws UserNotFoundException, AuthorizationDeniedException{
+  public UserDto deleteUserById(String token, Long id) throws UserNotFoundException, AuthorizationDeniedException {
     Long authUserId = tokenService.getUserIdInToken(token);
     Optional<User> userOptional = userRepository.findById(id);
 

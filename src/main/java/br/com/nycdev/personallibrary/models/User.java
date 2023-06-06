@@ -11,7 +11,7 @@ import java.util.Collection;
 import java.util.List;
 
 @Entity
-@Table(name="tb_users")
+@Table(name = "tb_users")
 public class User implements UserDetails {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,9 +26,9 @@ public class User implements UserDetails {
   private String role;
 
   @OneToMany(mappedBy = "owner")
-  private List<Book> books = new ArrayList<>();
+  private final List<Book> books = new ArrayList<>();
 
-  public User(String name, String login, String password, String role){
+  public User(String name, String login, String password, String role) {
     this.name = name;
     this.login = login;
     this.password = new BCryptPasswordEncoder().encode(password);
@@ -42,7 +42,8 @@ public class User implements UserDetails {
     this.role = "USER";
   }
 
-  protected User() { }
+  protected User() {
+  }
 
 
   public void setId(Long id) {

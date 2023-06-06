@@ -5,9 +5,7 @@ import br.com.nycdev.personallibrary.exceptions.AuthorizationDeniedException;
 import br.com.nycdev.personallibrary.exceptions.UserLoginAlreadyExistsException;
 import br.com.nycdev.personallibrary.exceptions.UserNotFoundException;
 import br.com.nycdev.personallibrary.forms.UserForm;
-
 import br.com.nycdev.personallibrary.services.UserService;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
